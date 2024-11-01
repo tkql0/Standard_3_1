@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -17,6 +18,8 @@ public class PlayerController : MonoBehaviour
     [HideInInspector]
     public bool canLook = true;
 
+    public Action setting;
+
     void Start()
     {
         Cursor.lockState = CursorLockMode.Locked;
@@ -35,6 +38,16 @@ public class PlayerController : MonoBehaviour
         mouseDelta = context.ReadValue<Vector2>();
     }
 
+    public void OnSettingInput(InputAction.CallbackContext InContext)
+    {
+        if (InContext.phase == InputActionPhase.Started)
+        {
+            setting?.Invoke();
+            ToggleCursor();
+        }
+
+    }
+
     void CameraLook()
     {
         camCurXRot += mouseDelta.y * lookSensitivity;
@@ -44,8 +57,9 @@ public class PlayerController : MonoBehaviour
         transform.eulerAngles += new Vector3(0, mouseDelta.x * lookSensitivity, 0);
     }
 
-    public void ToggleCursor(bool toggle)
+    public void ToggleCursor()
     {
+        bool toggle = Cursor.lockState == CursorLockMode.Locked;
         Cursor.lockState = toggle ? CursorLockMode.None : CursorLockMode.Locked;
         canLook = !toggle;
     }
